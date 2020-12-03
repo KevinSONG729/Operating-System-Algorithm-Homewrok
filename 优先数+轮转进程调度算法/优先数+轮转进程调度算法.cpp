@@ -61,6 +61,8 @@ private:
     short int STATUS;  //0:RUN 1:WAIT 2:FINISH
 };
 
+void Display(PCB*, string, int, int, int, int);
+
 int GetMin(PCB* Array, int* &flag,int num) {
     int i = 0;
     while (flag[i] == 1) i++;
@@ -84,8 +86,8 @@ int GetMin(PCB* Array, int* &flag,int num) {
 int CreatProcess(PCB* &Array, int num) {
     for (int i = 0; i < num; i++) {
         Array[i].setID(i+1);
-        Array[i].setPriority(random(5, 50));
-        Array[i].SetAlltime(random(1, 10));
+        Array[i].setPriority(random(5, 50));  //random(5, 50)
+        Array[i].SetAlltime(random(1, 10));  //random(1, 10)
     }
     int* flag = new int[num]{0};
     int min = GetMin(Array, flag,5);
@@ -99,33 +101,91 @@ int CreatProcess(PCB* &Array, int num) {
     return mintemp-1;
 };
 
-void PriorityProcess(int HEAD, int TAIL, int RUN, PCB* &Array) {
+void PriorityProcess(int &HEAD, int &TAIL, int &RUN, PCB* &Array) {
+    Display(Array, "Priority", 5, RUN, HEAD, TAIL);
     RUN = HEAD;
-    HEAD = Array[HEAD].getNext() - 1;
     Array[RUN].setStatus(0);
-    Array[RUN].SetAlltime(Array[RUN].getAlltime() - 1);
-    Array[RUN].setPriority(Array[RUN].getPriority() - 3);
-    Array[RUN].setCPUtime(Array[RUN].getCPUtime() + 1);
-    if (Array[RUN].getAlltime() == 0) {
-        Array[RUN].setStatus(2);  //finish
-    }
-    else {
-        if (Array[RUN].getPriority() >= Array[HEAD].getPriority()) {
-
+    HEAD = Array[HEAD].getNext() - 1;
+    while(Array[TAIL].getStatus()!=2){
+        while (Array[RUN].getPriority() >= Array[HEAD].getPriority() && Array[RUN].getAlltime() != 0) {
+            Array[RUN].SetAlltime(Array[RUN].getAlltime() - 1);
+            Array[RUN].setPriority(Array[RUN].getPriority() - 3);
+            Array[RUN].setCPUtime(Array[RUN].getCPUtime() + 1);
         }
+        Display(Array, "Priority", 5, RUN, HEAD, TAIL);
+        if (Array[RUN].getAlltime() == 0) {
+            Array[RUN].setStatus(2);
+            if (RUN == HEAD && HEAD == TAIL) continue;
+            RUN = HEAD;
+            Array[RUN].setStatus(0);
+            if (HEAD != TAIL) {
+                HEAD = Array[HEAD].getNext() - 1;
+            }
+            Display(Array, "Priority", 5, RUN, HEAD, TAIL);
+            continue;
+        }
+        else if (Array[RUN].getPriority() < Array[HEAD].getPriority()) {
+            int temp = RUN;
+            Array[RUN].setStatus(1);
+            RUN = HEAD;
+            if (HEAD != TAIL) {
+                HEAD = Array[HEAD].getNext() - 1;
+            }
+            else {
+                HEAD = temp;
+            }
+            if (Array[temp].getPriority() > Array[HEAD].getPriority()) {
+                Array[temp].setNext(HEAD + 1);
+                HEAD = temp;
+            }
+            else if (Array[temp].getPriority()<Array[TAIL].getPriority()){
+                Array[TAIL].setNext(temp + 1);
+                Array[temp].setNext(0);
+                TAIL = temp;
+            }
+            else {
+                int sxw = HEAD;
+                int xws = Array[sxw].getNext() - 1;
+                while (Array[temp].getPriority() > Array[sxw].getPriority()) {
+                    sxw = xws;
+                    xws = Array[sxw].getNext() - 1;
+                }
+                Array[sxw].setNext(temp + 1);
+                Array[temp].setNext(xws + 1);
+            }
+            Array[RUN].setStatus(0);
+            Display(Array, "Priority", 5, RUN, HEAD, TAIL);
+            //cout << "temp=" << temp;
+        }
+        else {
+            continue;
+        }
+        //Display(Array, "Priority", 5);
+        cout << "HEAD=" << HEAD <<" TAIL="<<TAIL<<" RUN="<<RUN<< endl;
     }
-
+    Display(Array, "Priority", 5, RUN, HEAD, TAIL);
+    cout << "跳出！！HEAD=" << HEAD << " TAIL=" << TAIL << endl;
 }
 
 void RoundRobinProcess() {
 
 }
 
-void Display(PCB* Array, string mode, int num) {
+void Display(PCB* Array, string mode, int num, int RUN, int HEAD, int TAIL) {
     cout << "OUTPUT OF " << mode << endl;
     cout << "==================================================" << endl;
     cout << "RUNNING PROC.\t\t\tWAITING QUEUE" << endl;
-
+    cout << Array[RUN].getID()<<"\t\t";
+    while (HEAD != TAIL) {
+        cout << Array[HEAD].getID() << "\t";
+        HEAD = Array[HEAD].getNext() - 1;
+    }
+    if (RUN != TAIL) {
+        cout << Array[TAIL].getID() << "\t" << endl;
+    }
+    else {
+        cout << endl;
+    }
     cout << "==================================================" << endl;
     cout << "ID\t\t1\t2\t3\t4\t5" << endl;
     cout << "PRIORITY\t";
@@ -178,9 +238,32 @@ int main()
     string mode;
     cout << "TYPE THE ALGORITHM:";
     cin >> mode;
-    Display(Array, mode,5);
+    //Display(Array, mode, 5);
+    PriorityProcess(HEAD, TAIL, RUN, Array);
+    //Display(Array, mode,5);
 }
 
 int random(double start, double end) {
     return (int)(start + (end - start) * rand() / (RAND_MAX + 1.0));
 }
+
+
+
+/*Array[RUN].setStatus(0);
+Array[RUN].SetAlltime(Array[RUN].getAlltime() - 1);
+Array[RUN].setPriority(Array[RUN].getPriority() - 3);
+Array[RUN].setCPUtime(Array[RUN].getCPUtime() + 1);
+if (Array[RUN].getAlltime() == 0) {
+    Array[RUN].setStatus(2);  //finish
+    Display(Array, "Priority", 5);
+}
+else {
+    while(Array[RUN].getPriority() >= Array[HEAD].getPriority()) {
+        Array[RUN].SetAlltime(Array[RUN].getAlltime() - 1);
+        Array[RUN].setPriority(Array[RUN].getPriority() - 3);
+        Array[RUN].setCPUtime(Array[RUN].getCPUtime() + 1);
+        Display(Array, "Priority", 5);
+    }
+    int temp = RUN;
+    RUN = HEAD;
+    HEAD = Array[HEAD].getNext() - 1;*/
