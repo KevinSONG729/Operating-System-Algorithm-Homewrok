@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "优先数+轮转进程调度算法", "优先数+轮转进程调度算法\优先数+轮转进程调度算法.vcxproj", "{26369469-9794-4806-AFDD-BA481EA4E6AD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "死锁观察与避免", "死锁观察与避免\死锁观察与避免.vcxproj", "{5A603C4C-2791-412C-8383-06BEFA0EC972}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{26369469-9794-4806-AFDD-BA481EA4E6AD}.Release|x64.Build.0 = Release|x64
 		{26369469-9794-4806-AFDD-BA481EA4E6AD}.Release|x86.ActiveCfg = Release|Win32
 		{26369469-9794-4806-AFDD-BA481EA4E6AD}.Release|x86.Build.0 = Release|Win32
+		{5A603C4C-2791-412C-8383-06BEFA0EC972}.Debug|x64.ActiveCfg = Debug|x64
+		{5A603C4C-2791-412C-8383-06BEFA0EC972}.Debug|x64.Build.0 = Debug|x64
+		{5A603C4C-2791-412C-8383-06BEFA0EC972}.Debug|x86.ActiveCfg = Debug|Win32
+		{5A603C4C-2791-412C-8383-06BEFA0EC972}.Debug|x86.Build.0 = Debug|Win32
+		{5A603C4C-2791-412C-8383-06BEFA0EC972}.Release|x64.ActiveCfg = Release|x64
+		{5A603C4C-2791-412C-8383-06BEFA0EC972}.Release|x64.Build.0 = Release|x64
+		{5A603C4C-2791-412C-8383-06BEFA0EC972}.Release|x86.ActiveCfg = Release|Win32
+		{5A603C4C-2791-412C-8383-06BEFA0EC972}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
