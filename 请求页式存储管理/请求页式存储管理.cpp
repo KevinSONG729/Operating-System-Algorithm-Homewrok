@@ -7,6 +7,7 @@ using namespace std;
 struct Node {
 	int no;
 	int time = 0;
+	int Fre = 0;
 };
 
 void createRandom(int(&a)[300], int(&b)[300], int pagesize) {
@@ -53,7 +54,7 @@ void FIFO(int b[300], int called, list<Node>& l) {
 }
 
 void LRU(int b[300], int called, list<Node>& l) {
-	int max = 0, maxi = 0;
+	int max = 0;
 	list<Node>::iterator it;
 	list<Node>::iterator maxit;
 	for (it = l.begin(); it != l.end();it++) {
@@ -66,8 +67,18 @@ void LRU(int b[300], int called, list<Node>& l) {
 	(*maxit).time = 0;
 }
 
-double LFU() {
-	return 1.0;
+void LFU(int b[300], int called, list<Node>& l) {
+	int min = 100;
+	list<Node>::iterator it;
+	list<Node>::iterator minit;
+	for (it = l.begin(); it != l.end(); it++) {
+		if ((*it).time < min) {
+			min = (*it).Fre;
+			minit = it;
+		}
+	}
+	(*minit).no = b[called];
+	(*minit).Fre = 0;
 }
 
 void display(int(&a)[300], int(&b)[300], int pagesize) {
@@ -105,6 +116,7 @@ void page_assigned(int pagesize, int mode, int b[300]) {
 					if ((*it).no == b[j]) {
 						page_in++;
 						(*it).time = 0;
+						(*it).Fre++;
 						p = 1;
 						break;
 					}
@@ -114,7 +126,7 @@ void page_assigned(int pagesize, int mode, int b[300]) {
 						(*it).time++;
 					}
 					if (l.size() < i) {
-						l.push_back({ b[j],0 });
+						l.push_back({ b[j],0,0});
 						page_out++;
 					}
 					else if (l.size() == i) {
@@ -127,14 +139,14 @@ void page_assigned(int pagesize, int mode, int b[300]) {
 						case 2:
 							LRU(b, j, l); break;
 						case 3:
-							rate = LFU(); break;
+							LFU(b, j, l); break;
 						}
 						page_out++;
 					}
 				}
 			}
 			else {
-				l.push_back({b[j],0});
+				l.push_back({b[j],0,0});
 				page_out++;
 			}
 		}
