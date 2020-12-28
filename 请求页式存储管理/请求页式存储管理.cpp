@@ -10,6 +10,14 @@ struct Node {
 	int Fre = 0;
 };
 
+bool SortStruct1(const Node& n1, const Node& n2) {
+	return n1.time < n2.time;
+}
+
+bool SortStruct2(const Node& n1, const Node& n2) {
+	return n1.Fre > n2.Fre;
+}
+
 void createRandom(int(&a)[300], int(&b)[300], int pagesize) {
 	int m = 0, m1 = 0, m2 = 0,i = 0;
 	while (i<256) {
@@ -54,31 +62,22 @@ void FIFO(int b[300], int called, list<Node>& l) {
 }
 
 void LRU(int b[300], int called, list<Node>& l) {
-	int max = 0;
-	list<Node>::iterator it;
-	list<Node>::iterator maxit;
-	for (it = l.begin(); it != l.end();it++) {
-		if ((*it).time > max) {
-			max = (*it).time;
-			maxit = it;
-		}
-	}
-	(*maxit).no = b[called];
-	(*maxit).time = 0;
+	Node x{ b[called] };
+	l.sort(SortStruct1);
+	l.pop_back();
+	l.push_back(x);
 }
 
 void LFU(int b[300], int called, list<Node>& l) {
-	int min = 100;
+	Node x{ b[called] };
 	list<Node>::iterator it;
-	list<Node>::iterator minit;
-	for (it = l.begin(); it != l.end(); it++) {
-		if ((*it).time < min) {
-			min = (*it).Fre;
-			minit = it;
-		}
+	l.sort(SortStruct2);
+	it = l.end(); it--;
+	if((*it).no == b[called-1]) {
+		--it;
 	}
-	(*minit).no = b[called];
-	(*minit).Fre = 0;
+	(*it).no = b[called];
+	(*it).Fre = 0;
 }
 
 void display(int(&a)[300], int(&b)[300], int pagesize) {
