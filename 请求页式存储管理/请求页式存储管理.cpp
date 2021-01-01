@@ -2,6 +2,8 @@
 #include<list>
 #include<ctime>
 #define virtualSize 32
+#define len 256
+#define INF 1000
 using namespace std;
 
 struct Node {
@@ -20,7 +22,7 @@ bool SortStruct2(const Node& n1, const Node& n2) {
 
 void createRandom(int(&a)[300], int(&b)[300], int pagesize) {
 	int m = 0, m1 = 0, m2 = 0,i = 0;
-	while (i<256) {
+	while (i<len) {
 		m = rand() % 32767;
 		a[i] = m + 1; ++i;
 		m1 = rand() % (m + 1);
@@ -31,29 +33,47 @@ void createRandom(int(&a)[300], int(&b)[300], int pagesize) {
 			a[i] = m2; ++i;
 		}
 	}
-	for (int i = 0; i < 256; i++) {
+	for (int i = 0; i < len; i++) {
 		b[i] = a[i] / (1024 * pagesize);
 	}
 }
 
 void OPT(int b[300], int called, list<Node>& l) {
 	list<Node>::iterator it;
-	int p, q=0;
-	int max = 0;
+	/*cout << "修改前：" << endl;
 	for (it = l.begin(); it != l.end(); it++) {
-		for (p = called; p < 256; p++) {
+		cout << (*it).no << "->";
+	}
+	cout << endl;*/
+	int p, q=0;
+	int f = 0;
+	int max = 0;
+	int maxl = 0;
+	for (it = l.begin(); it != l.end(); it++) {
+		f = 0;
+		for (p = called+1; p < len; p++) {
+			q = 0;
 			if ((*it).no == b[p]) {
 				q = p;
+				f = 1;
 				break;
 			}
 		}
+		if (!f) q = INF;
 		if (q > max) {
 			max = q;
+			maxl = (*it).no;
 		}
 	}
+	/*cout << "max的值等于" << max << " 该置换出的页号为：" << maxl << endl;*/
 	for (it = l.begin(); it != l.end(); it++) {
-		if ((*it).no == b[max]) (*it).no = b[called];
+		if ((*it).no == maxl) (*it).no = b[called];
 	}
+	/*cout << "修改后：" << endl;
+	for (it = l.begin(); it != l.end(); it++) {
+		cout << (*it).no << "->";
+	}
+	cout << endl;*/
 }
 
 void FIFO(int b[300], int called, list<Node>& l) {
@@ -82,7 +102,7 @@ void LFU(int b[300], int called, list<Node>& l) {
 
 void display(int(&a)[300], int(&b)[300], int pagesize) {
 	cout << "THE VIRTUALADDRESS STREAM AS FOLLOWS:" << endl;
-	for (int i = 0; i < 64; i++) {
+	for (int i = 0; i < len/4; i++) {
 		for (int j = 0; j < 4; j++) {
 			cout << "a[" << 4 * i + j << "]=" << a[4 * i + j] << "\t";
 		}
@@ -90,7 +110,7 @@ void display(int(&a)[300], int(&b)[300], int pagesize) {
 	}
 	cout << "==============================================================" << endl;
 	cout << "PAGE NUMBER WITH SIZE " << pagesize << "k FOR EACH ADDRESS IS:" << endl;
-	for (int i = 0; i < 64; i++) {
+	for (int i = 0; i < len/4; i++) {
 		for (int j = 0; j < 4; j++) {
 			cout << "pageno[" << 4 * i + j << "]=" << b[4 * i + j] << "\t";
 		}
@@ -108,7 +128,7 @@ void page_assigned(int pagesize, int mode, int b[300]) {
 	for (int i = 4; i <= virtualSize / pagesize; i += 2) {
 		int time[32] = { 0 };
 		double page_in = 0, page_out = 0;
-		for (int j = 0; j < 256; j++) {
+		for (int j = 0; j < len; j++) {
 			if (!l.empty()) {
 				int p = 0;
 				for (it = l.begin(); it != l.end(); it++) {
