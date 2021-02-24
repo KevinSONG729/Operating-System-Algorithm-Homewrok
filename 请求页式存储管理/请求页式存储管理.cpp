@@ -48,7 +48,7 @@ void OPT(int b[300], int called, list<Node>& l) {
 	int p, q=0;
 	int f = 0;
 	int max = 0;
-	int maxl = 0;
+	int maxl = (*l.begin()).no;
 	for (it = l.begin(); it != l.end(); it++) {
 		f = 0;
 		for (p = called+1; p < len; p++) {
